@@ -1,12 +1,18 @@
-import { http, createConfig } from "wagmi";
-import { base, mainnet } from "wagmi/chains";
-import { metaMask } from "wagmi/connectors";
+// import { metaMask } from "wagmi/connectors";
+import { createConfig, http, cookieStorage, createStorage } from "wagmi";
+import { mainnet, sepolia } from "wagmi/chains";
 
-export const config = createConfig({
-  chains: [mainnet, base],
-  connectors: [metaMask()],
-  transports: {
-    [mainnet.id]: http(),
-    [base.id]: http(),
-  },
-});
+export function getConfig() {
+  return createConfig({
+    chains: [mainnet, sepolia],
+    ssr: true,
+    storage: createStorage({
+      storage: cookieStorage,
+    }),
+    // connectors: [metaMask()],
+    transports: {
+      [mainnet.id]: http(),
+      [sepolia.id]: http(),
+    },
+  });
+}

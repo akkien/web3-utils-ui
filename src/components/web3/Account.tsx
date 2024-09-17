@@ -6,8 +6,12 @@ export default function Account() {
 
   return (
     <div>
-      {address && <div>{address.slice(0, 6) + "..." + address.slice(-4)}</div>}
-      <button onClick={() => disconnect()}>Disconnect</button>
+      <button
+        onClick={() => disconnect()}
+        className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded'
+      >
+        {address ? address.slice(0, 6) + "..." + address.slice(-4) : ""}
+      </button>
     </div>
   );
 }

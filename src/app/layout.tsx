@@ -1,8 +1,12 @@
-`use client`;
 import type { Metadata } from "next";
 import localFont from "next/font/local";
+import { headers } from "next/headers";
+import { cookieToInitialState } from "wagmi";
 import Web3Provider from "../providers/web3/Provider";
-import Wallet from "../components/web3/Wallet";
+import { getConfig } from "../providers/web3/config";
+// import Wallet from "../components/web3";
+// import { GiCoinflip } from "react-icons/gi";
+import Header from "../components/header";
 import "./globals.css";
 
 const geistSans = localFont({
@@ -26,13 +30,13 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const initialState = cookieToInitialState(getConfig(), headers().get("cookie"));
+
   return (
     <html lang='en'>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <Web3Provider>
-          <div>
-            <Wallet />
-          </div>
+        <Web3Provider initialState={initialState}>
+          <Header />
           {children}
         </Web3Provider>
       </body>
