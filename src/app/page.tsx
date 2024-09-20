@@ -1,11 +1,8 @@
-import Link from "next/link";
-import { FaTelegram } from "react-icons/fa6";
-import { FaGithub } from "react-icons/fa6";
-import { FaDiscord } from "react-icons/fa6";
+import Footer from "../components/footer";
 
 export default function Home() {
   return (
-    <>
+    <div className='flex flex-col justify-between space-y-2'>
       <div className="rounded-xl mt-16 bg-cover bg-center bg-[url('/images/aave_small.png')]">
         <div className='h-[512px] backdrop-blur-sm rounded-xl flex flex-col justify-center items-center p-64'>
           <p className='text-white text-center text-5xl'>
@@ -20,45 +17,29 @@ export default function Home() {
           <button className='mt-6 bg-blue-500 hover:bg-blue-300 text-white py-2 px-4 rounded-3xl'>Contact Us</button>
         </div>
       </div>
-      <div className='rounded-xl mt-16 bg-sky-100 py-8 px-12 h-48 text-gray-500 flex flex-col justify-between'>
-        <div className='flex justify-between'>
-          <Link href='/'>
-            <span className='font-handlee font-semibold hover:cursor-pointer'>VerinLayer</span>
-          </Link>
-          <div className='flex justify-between w-96 text-sm'>
-            <div>
-              <p className='font-bold'>Resources</p>
-              <ul>
-                <li>Brand</li>
-                <li>FAQ</li>
-                <li>Help & Support</li>
-                <li>Governance</li>
-              </ul>
-            </div>
-            <div>
-              <p className='font-bold'>Developers</p>
-              <ul>
-                <li>Technical Paper</li>
-                <li>Security</li>
-                <li>Bug Bounty</li>
-              </ul>
-            </div>
-            <div>
-              <p className='font-bold'>Company</p>
-              <ul>
-                <li>Privacy Policy</li>
-                <li>Term Of Use</li>
-                <li>Contact</li>
-              </ul>
-            </div>
-          </div>
-        </div>
-        <div className='flex items-center justify-between w-32'>
-          <FaTelegram />
-          <FaGithub />
-          <FaDiscord />
-        </div>
+      <div className='py-24'>
+        <p className='text-3xl'>Boost your defi profile with 4 simple steps:</p>
+        <ol>
+          <li className='text-xl'>Step 1: Select lending project that you had borrowed tokens</li>
+          <li className='text-xl'>Step 2: Click prove my points to blockchain</li>
+          <li className='text-xl'>Step 3: Check out</li>
+          <li className='text-xl'>
+            Step 4: Go to lending project you want to borrow and enjoy better lending percentage{" "}
+          </li>
+        </ol>
       </div>
-    </>
+      <div className='py-24'>
+        <p className='text-3xl'>Boost your defi profile with 4 simple steps:</p>
+        <ol>
+          <li className='text-xl'>Step 1: Select lending project that you had borrowed tokens</li>
+          <li className='text-xl'>Step 2: Click prove my points to blockchain</li>
+          <li className='text-xl'>Step 3: Check out</li>
+          <li className='text-xl'>
+            Step 4: Go to lending project you want to borrow and enjoy better lending percentage{" "}
+          </li>
+        </ol>
+      </div>
+      <Footer />
+    </div>
   );
 }

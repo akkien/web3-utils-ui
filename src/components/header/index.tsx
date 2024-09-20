@@ -1,9 +1,30 @@
+"use client";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import Wallet from "../web3";
 
 const Header = () => {
+  const [isScrolled, setIsScrolled] = useState(false);
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 50) {
+        setIsScrolled(true);
+      } else {
+        setIsScrolled(false);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
   return (
-    <header>
+    <header
+      className={`fixed top-0 left-0 w-full z-500 bg-white transition-all duration-300 ${
+        isScrolled ? "border-b-zinc-600" : ""
+      }`}
+    >
       <nav aria-label='Global' className='mx-auto flex max-w-7xl items-center justify-between p-6 lg:px-8'>
         <div className='flex lg:flex-1'>
           <Link href='/'>

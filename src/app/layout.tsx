@@ -37,7 +37,7 @@ export default function RootLayout({
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <Web3Provider initialState={initialState}>
           <Header />
-          <div className='mx-auto max-w-7xl px-8 mt-2'>{children}</div>
+          <div className='mx-auto max-w-7xl px-8 mt-48'>{children}</div>
         </Web3Provider>
       </body>
     </html>
