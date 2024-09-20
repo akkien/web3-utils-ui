@@ -12,6 +12,10 @@ const config: Config = {
         background: "var(--background)",
         foreground: "var(--foreground)",
       },
+      fontFamily: {
+        quick: ["Quicksand", "sans-serif"],
+        handlee: ["Handlee", "cursive"],
+      },
     },
   },
   plugins: [],
