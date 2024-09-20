@@ -37,7 +37,7 @@ export default function RootLayout({
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <Web3Provider initialState={initialState}>
           <Header />
-          <div className='grid grid-rows-[20px_1fr_20px] items-center p-4 gap-16 sm:p-20 mt-32'>{children}</div>
+          <div className='mx-auto max-w-7xl px-8 mt-2'>{children}</div>
         </Web3Provider>
       </body>
     </html>
