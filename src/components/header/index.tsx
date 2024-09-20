@@ -20,12 +20,11 @@ const Header = () => {
     };
   }, []);
   return (
-    <header
-      className={`fixed top-0 left-0 w-full z-500 bg-white transition-all duration-300 ${
-        isScrolled ? "border-b-zinc-600" : ""
-      }`}
-    >
-      <nav aria-label='Global' className='mx-auto flex max-w-7xl items-center justify-between p-6 lg:px-8'>
+    <header className={`fixed top-0 w-full z-50 bg-white`}>
+      <nav
+        aria-label='Global'
+        className={`mx-auto flex max-w-7xl items-center justify-between p-6 lg:px-8 ${isScrolled ? "shadow-nav" : ""}`}
+      >
         <div className='flex lg:flex-1'>
           <Link href='/'>
             <span className='font-handlee font-semibold hover:cursor-pointer'>VerinLayer</span>

@@ -16,6 +16,9 @@ const config: Config = {
         quick: ["Quicksand", "sans-serif"],
         handlee: ["Handlee", "cursive"],
       },
+      boxShadow: {
+        nav: "rgba(22, 25, 28, 0.2) 0px 15px 15px -10px",
+      },
     },
   },
   plugins: [],
