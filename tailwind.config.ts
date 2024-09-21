@@ -19,6 +19,15 @@ const config: Config = {
       boxShadow: {
         nav: "rgba(22, 25, 28, 0.2) 0px 15px 15px -10px",
       },
+      keyframes: {
+        slideUpFade: {
+          "0%": { opacity: "0", transform: "translateY(50px)" },
+          "100%": { opacity: "1", transform: "translateY(0)" },
+        },
+      },
+      animation: {
+        slideUpFade: "slideUpFade 2s ease-out forwards",
+      },
     },
   },
   plugins: [],

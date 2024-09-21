@@ -1,8 +1,32 @@
-import Footer from "../components/footer";
+"use client";
 import Image from "next/image";
+import Footer from "@/components/footer";
+import Carousel from "@/components/carousel";
 import aave from "/public/images/aave_small.png";
+import { useEffect, useRef, useState } from "react";
 
 export default function Home() {
+  const [isVisible, setIsVisible] = useState(false);
+  const textRef = useRef(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          setIsVisible(true);
+          observer.disconnect(); // Disconnect after element is visible to avoid re-triggering
+        }
+      },
+      { threshold: 0.1 } // Adjust the threshold to define when the element should trigger the effect
+    );
+
+    if (textRef.current) {
+      observer.observe(textRef.current);
+    }
+
+    return () => observer.disconnect(); // Cleanup observer on unmount
+  }, []);
+
   return (
     <div className='flex flex-col justify-between space-y-2'>
       <section className='relative z-0'>
@@ -39,7 +63,8 @@ export default function Home() {
         Voluptatibus at fuga aliquam saepe aperiam. Atque laborum adipisci cumque pariatur officia? Eius expedita et
         quam incidunt quo sequi, voluptate nisi ipsum harum quidem quibusdam!
       </div>
-      <div className='py-24'>
+      <Carousel />
+      <div className={`py-24 opacity-0 ${isVisible ? "animate-slideUpFade delay-300" : ""}`} ref={textRef}>
         <p className='text-4xl font-quick font-semibold pb-4'>Boost your defi profile with 4 simple steps:</p>
         <ol>
           <li className='text-xl'>Step 1: Select lending project that you had borrowed tokens</li>
@@ -50,8 +75,8 @@ export default function Home() {
           </li>
         </ol>
       </div>
-
       <Footer />
+      <div className='min-h-8'></div>
     </div>
   );
 }
