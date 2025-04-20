@@ -23,7 +23,7 @@ const Header = () => {
     <header className={`fixed top-0 w-full z-50 bg-white`}>
       <nav
         aria-label='Global'
-        className={`mx-auto flex max-w-7xl items-center justify-between p-6 lg:px-8 ${isScrolled ? "shadow-nav" : ""}`}
+        className={`mx-auto flex max-w-7xl items-center justify-between p-3 lg:px-8 ${isScrolled ? "shadow-nav" : ""}`}
       >
         <div className='flex lg:flex-1'>
           <Link href='/'>
