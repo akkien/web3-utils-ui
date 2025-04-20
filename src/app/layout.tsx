@@ -21,8 +21,8 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Lending Zk Profile",
-  description: "Platform helping you to prove your defi activity profile",
+  title: "Utils Playground",
+  description: "All blockchain utility functions you need are here",
 };
 
 export default function RootLayout({

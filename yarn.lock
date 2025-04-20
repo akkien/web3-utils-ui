@@ -7,6 +7,11 @@
   resolved "https://registry.npmjs.org/@adraffy/ens-normalize/-/ens-normalize-1.10.0.tgz#d2a39395c587e092d77cbbc80acf956a54f38bf7"
   integrity sha512-nA9XHtlAkYfJxY7bce8DcN7eKxWWCWkU+1GR9d+U6MbNpfwQp8TI7vqOsBsMcHoT4mBu2kypKoSKnghEzOOq5Q==
 
+"@adraffy/ens-normalize@1.10.1":
+  version "1.10.1"
+  resolved "https://registry.npmjs.org/@adraffy/ens-normalize/-/ens-normalize-1.10.1.tgz#63430d04bd8c5e74f8d7d049338f1cd9d4f02069"
+  integrity sha512-96Z2IP3mYmF1Xg2cDm8f1gWGf/HUVedQ3FMifV4kG/PQ4yEP51xDtRAEfhVNt5f/uzpNkZHwWQuUcu6D6K+Ekw==
+
 "@alloc/quick-lru@^5.2.0":
   version "5.2.0"
   resolved "https://registry.npmjs.org/@alloc/quick-lru/-/quick-lru-5.2.0.tgz#7bf68b20c0a350f936915fcae06f58e32007ce30"
@@ -351,6 +356,20 @@
     semver "^7.5.4"
     uuid "^9.0.1"
 
+"@monaco-editor/loader@^1.5.0":
+  version "1.5.0"
+  resolved "https://registry.npmjs.org/@monaco-editor/loader/-/loader-1.5.0.tgz#dcdbc7fe7e905690fb449bed1c251769f325c55d"
+  integrity sha512-hKoGSM+7aAc7eRTRjpqAZucPmoNOC4UUbknb/VNoTkEIkCPhqV8LfbsgM1webRM7S/z21eHEx9Fkwx8Z/C/+Xw==
+  dependencies:
+    state-local "^1.0.6"
+
+"@monaco-editor/react@^4.7.0":
+  version "4.7.0"
+  resolved "https://registry.npmjs.org/@monaco-editor/react/-/react-4.7.0.tgz#35a1ec01bfe729f38bfc025df7b7bac145602a60"
+  integrity sha512-cyzXQCtO47ydzxpQtCGSQGOC8Gk3ZUeBXFAxD+CWXYFo5OqZyZUonFl0DwUlTyAfRHntBfw2p3w4s9R6oe1eCA==
+  dependencies:
+    "@monaco-editor/loader" "^1.5.0"
+
 "@motionone/animation@^10.15.1", "@motionone/animation@^10.18.0":
   version "10.18.0"
   resolved "https://registry.npmjs.org/@motionone/animation/-/animation-10.18.0.tgz#868d00b447191816d5d5cf24b1cafa144017922b"
@@ -477,6 +496,13 @@
   resolved "https://registry.npmjs.org/@next/swc-win32-x64-msvc/-/swc-win32-x64-msvc-14.2.11.tgz#2150783dfec3b3e0e7c3ecfda2d4f30fbf913d44"
   integrity sha512-gQpS7mcgovWoaTG1FbS5/ojF7CGfql1Q0ZLsMrhcsi2Sr9HEqsUZ70MPJyaYBXbk6iEAP7UXMD9HC8KY1qNwvA==
 
+"@noble/curves@1.2.0":
+  version "1.2.0"
+  resolved "https://registry.npmjs.org/@noble/curves/-/curves-1.2.0.tgz#92d7e12e4e49b23105a2555c6984d41733d65c35"
+  integrity sha512-oYclrNgRaM9SsBUBVbb8M6DTV7ZHRTKugureoYEncY5c65HOmRzvSiTE3y5CYaPYJA/GVkrhXEoF0M3Ya9PMnw==
+  dependencies:
+    "@noble/hashes" "1.3.2"
+
 "@noble/curves@1.4.0":
   version "1.4.0"
   resolved "https://registry.npmjs.org/@noble/curves/-/curves-1.4.0.tgz#f05771ef64da724997f69ee1261b2417a49522d6"
@@ -497,6 +523,11 @@
   integrity sha512-TlaHRXDehJuRNR9TfZDNQ45mMEd5dwUwmicsafcIX4SsNiqnCHKjE/1alYPd/lDRVhxdhUAlv8uEhMCI5zjIJQ==
   dependencies:
     "@noble/hashes" "1.5.0"
+
+"@noble/hashes@1.3.2":
+  version "1.3.2"
+  resolved "https://registry.npmjs.org/@noble/hashes/-/hashes-1.3.2.tgz#6f26dbc8fbc7205873ce3cee2f690eba0d421b39"
+  integrity sha512-MVC8EAQp7MvEcm30KWENFjgR+Mkmf+D189XJTkFIlwohU5hcBbn1ZkKq7KVTi2Hme3PMGF390DaL52beVrIihQ==
 
 "@noble/hashes@1.4.0", "@noble/hashes@~1.4.0":
   version "1.4.0"
@@ -887,6 +918,13 @@
   version "22.5.5"
   resolved "https://registry.npmjs.org/@types/node/-/node-22.5.5.tgz#52f939dd0f65fc552a4ad0b392f3c466cc5d7a44"
   integrity sha512-Xjs4y5UPO/CLdzpgR6GirZJx36yScjh73+2NlLlkFRSoQN8B0DpfXPdZGnvVmLRLOsqDpOfTNv7D9trgGhmOIA==
+  dependencies:
+    undici-types "~6.19.2"
+
+"@types/node@22.7.5":
+  version "22.7.5"
+  resolved "https://registry.npmjs.org/@types/node/-/node-22.7.5.tgz#cfde981727a7ab3611a481510b473ae54442b92b"
+  integrity sha512-jML7s2NAzMWc//QSJ1a3prpk78cOPchGvXJsC3C6R6PSMoooztvRVQEz89gmBTBY1SPMaqo5teB4uNHPdetShQ==
   dependencies:
     undici-types "~6.19.2"
 
@@ -1335,6 +1373,11 @@ acorn@^8.11.3, acorn@^8.9.0:
   version "8.12.1"
   resolved "https://registry.npmjs.org/acorn/-/acorn-8.12.1.tgz#71616bdccbe25e27a54439e0046e89ca76df2248"
   integrity sha512-tcpGyI9zbizT9JbV6oYE477V6mTlXvvi0T0G3SNIYE2apm/G5huBa1+K89VGeovbg+jycCrfhl3ADxErOuO6Jg==
+
+aes-js@4.0.0-beta.5:
+  version "4.0.0-beta.5"
+  resolved "https://registry.npmjs.org/aes-js/-/aes-js-4.0.0-beta.5.tgz#8d2452c52adedebc3a3e28465d858c11ca315873"
+  integrity sha512-G965FqalsNyrPqgEGON7nIx1e/OVENSgiEIzyC63haUMuvNnwIgIjMs52hlTCKhkBny7A2ORNlfY9Zu+jmGk1Q==
 
 ajv@^6.12.4:
   version "6.12.6"
@@ -2460,6 +2503,19 @@ ethereum-cryptography@^2.0.0:
     "@noble/hashes" "1.4.0"
     "@scure/bip32" "1.4.0"
     "@scure/bip39" "1.3.0"
+
+ethers@^6.13.5:
+  version "6.13.5"
+  resolved "https://registry.npmjs.org/ethers/-/ethers-6.13.5.tgz#8c1d6ac988ac08abc3c1d8fabbd4b8b602851ac4"
+  integrity sha512-+knKNieu5EKRThQJWwqaJ10a6HE9sSehGeqWN65//wE7j47ZpFhKAnHB/JJFibwwg61I/koxaPsXbXpD/skNOQ==
+  dependencies:
+    "@adraffy/ens-normalize" "1.10.1"
+    "@noble/curves" "1.2.0"
+    "@noble/hashes" "1.3.2"
+    "@types/node" "22.7.5"
+    aes-js "4.0.0-beta.5"
+    tslib "2.7.0"
+    ws "8.17.1"
 
 event-target-shim@^5.0.0:
   version "5.0.1"
@@ -4483,6 +4539,11 @@ split2@^4.0.0:
   resolved "https://registry.npmjs.org/split2/-/split2-4.2.0.tgz#c9c5920904d148bab0b9f67145f245a86aadbfa4"
   integrity sha512-UcjcJOWknrNkF6PLX83qcHM6KHgVKNkV62Y8a5uYDVv9ydGQVwAHMKqHdJje1VTWpljG0WYpCDhrCdAOYH4TWg==
 
+state-local@^1.0.6:
+  version "1.0.7"
+  resolved "https://registry.npmjs.org/state-local/-/state-local-1.0.7.tgz#da50211d07f05748d53009bee46307a37db386d5"
+  integrity sha512-HTEHMNieakEnoe33shBYcZ7NX83ACUjCu8c40iOGEZsngj9zRnkqS9j1pqQPXwobB0ZcVTk27REb7COQ0UR59w==
+
 std-env@^3.7.0:
   version "3.7.0"
   resolved "https://registry.npmjs.org/std-env/-/std-env-3.7.0.tgz#c9f7386ced6ecf13360b6c6c55b8aaa4ef7481d2"
@@ -4771,7 +4832,7 @@ tslib@1.14.1:
   resolved "https://registry.npmjs.org/tslib/-/tslib-1.14.1.tgz#cf2d38bdc34a134bcaf1091c41f6619e2f672d00"
   integrity sha512-Xni35NKzjgMrwevysHTCArtLDpPvye8zV/0E4EyYn43P7/7qvQwPh9BGkHewbMulVntbigmcT7rdX3BNo9wRJg==
 
-tslib@^2.0.0, tslib@^2.3.1, tslib@^2.4.0:
+tslib@2.7.0, tslib@^2.0.0, tslib@^2.3.1, tslib@^2.4.0:
   version "2.7.0"
   resolved "https://registry.npmjs.org/tslib/-/tslib-2.7.0.tgz#d9b40c5c40ab59e8738f297df3087bf1a2690c01"
   integrity sha512-gLXCKdN1/j47AiHiOkJN69hJmcbGTHI0ImLmbYLHykhgeN0jVGola9yVjFgzCUklsZQMW55o+dW7IXv3RCXDzA==
