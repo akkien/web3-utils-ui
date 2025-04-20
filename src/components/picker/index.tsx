@@ -13,7 +13,7 @@ const topics = [
         id: "ethereum",
         name: "Ethereum",
         options: [
-          { id: "eth_tx", name: "Transactions", component: <BaseConverter /> },
+          { id: "eth_tx", name: "Number Base Converter", component: <BaseConverter /> },
           { id: "eth_abi", name: "ABI Encoding" },
           { id: "eth_sig", name: "Signatures" },
         ],
@@ -47,28 +47,6 @@ const topics = [
         options: [
           { id: "amm", name: "AMM Swaps" },
           { id: "orderbook", name: "Orderbook" },
-        ],
-      },
-    ],
-  },
-  {
-    id: "security",
-    name: "Security",
-    subtopics: [
-      {
-        id: "auditing",
-        name: "Auditing",
-        options: [
-          { id: "static_analysis", name: "Static Analysis" },
-          { id: "symbolic_execution", name: "Symbolic Execution" },
-        ],
-      },
-      {
-        id: "attacks",
-        name: "Common Attacks",
-        options: [
-          { id: "reentrancy", name: "Reentrancy" },
-          { id: "flash_loans", name: "Flash Loan Attacks" },
         ],
       },
     ],

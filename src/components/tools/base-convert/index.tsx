@@ -8,9 +8,12 @@ interface ConversionResult {
   binary: string;
 }
 
+type BaseType = "auto" | "binary" | "decimal" | "hexadecimal";
+
 export const BaseConverter = () => {
   const [inputValue, setInputValue] = useState<string>("");
   const [detectedBase, setDetectedBase] = useState<string>("");
+  const [selectedBase, setSelectedBase] = useState<BaseType>("auto");
   const [conversionResults, setConversionResults] = useState<ConversionResult>({
     decimal: "",
     hex: "",
@@ -18,7 +21,7 @@ export const BaseConverter = () => {
   });
   const [error, setError] = useState<string>("");
 
-  // Detect the base of the input and convert to other bases
+  // Convert input based on selected or detected base
   useEffect(() => {
     if (!inputValue.trim()) {
       setDetectedBase("");
@@ -29,25 +32,53 @@ export const BaseConverter = () => {
 
     try {
       let baseValue: number;
-      let base: string;
+      let base: string = selectedBase;
 
-      // Detect binary (all 0s and 1s)
-      if (/^[01]+$/.test(inputValue)) {
-        baseValue = parseInt(inputValue, 2);
-        base = "binary";
-      }
-      // Detect hexadecimal (starts with 0x or contains only hex digits)
-      else if (/^0x[0-9a-fA-F]+$/.test(inputValue) || /^[0-9a-fA-F]+$/.test(inputValue)) {
-        const hexValue = inputValue.startsWith("0x") ? inputValue.slice(2) : inputValue;
-        baseValue = parseInt(hexValue, 16);
-        base = "hexadecimal";
-      }
-      // Detect decimal (only contains digits)
-      else if (/^[0-9]+$/.test(inputValue)) {
-        baseValue = parseInt(inputValue, 10);
-        base = "decimal";
+      // If auto detection is selected
+      if (selectedBase === "auto") {
+        // Detect binary (all 0s and 1s)
+        if (/^[01]+$/.test(inputValue)) {
+          baseValue = parseInt(inputValue, 2);
+          base = "binary";
+        }
+        // Detect hexadecimal (starts with 0x or contains only hex digits)
+        else if (/^0x[0-9a-fA-F]+$/.test(inputValue) || /^[0-9a-fA-F]+$/.test(inputValue)) {
+          const hexValue = inputValue.startsWith("0x") ? inputValue.slice(2) : inputValue;
+          baseValue = parseInt(hexValue, 16);
+          base = "hexadecimal";
+        }
+        // Detect decimal (only contains digits)
+        else if (/^[0-9]+$/.test(inputValue)) {
+          baseValue = parseInt(inputValue, 10);
+          base = "decimal";
+        } else {
+          throw new Error("Could not detect base. Input must be binary, decimal, or hexadecimal.");
+        }
       } else {
-        throw new Error("Could not detect base. Input must be binary, decimal, or hexadecimal.");
+        // Use the manually selected base
+        switch (selectedBase) {
+          case "binary":
+            if (!/^[01]+$/.test(inputValue)) {
+              throw new Error("Invalid binary input. Must contain only 0s and 1s.");
+            }
+            baseValue = parseInt(inputValue, 2);
+            break;
+          case "decimal":
+            if (!/^[0-9]+$/.test(inputValue)) {
+              throw new Error("Invalid decimal input. Must contain only digits.");
+            }
+            baseValue = parseInt(inputValue, 10);
+            break;
+          case "hexadecimal":
+            const hexValue = inputValue.startsWith("0x") ? inputValue.slice(2) : inputValue;
+            if (!/^[0-9a-fA-F]+$/.test(hexValue)) {
+              throw new Error("Invalid hexadecimal input. Must contain only hex digits (0-9, A-F).");
+            }
+            baseValue = parseInt(hexValue, 16);
+            break;
+          default:
+            throw new Error("Invalid base selection.");
+        }
       }
 
       setDetectedBase(base);
@@ -62,12 +93,18 @@ export const BaseConverter = () => {
     } catch (err: any) {
       setError(err.message || "Invalid input");
       setConversionResults({ decimal: "", hex: "", binary: "" });
-      setDetectedBase("");
+      if (selectedBase === "auto") {
+        setDetectedBase("");
+      }
     }
-  }, [inputValue]);
+  }, [inputValue, selectedBase]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(e.target.value);
+  };
+
+  const handleBaseChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedBase(e.target.value as BaseType);
   };
 
   const handleCopyToClipboard = (value: string) => {
@@ -79,17 +116,38 @@ export const BaseConverter = () => {
       <h2 className='text-2xl font-bold mb-6'>Number Base Converter</h2>
 
       <div className='mb-6'>
-        <label className='block text-gray-700 text-sm font-bold mb-2'>
-          Enter a number (binary, decimal, or hexadecimal):
-        </label>
-        <input
-          type='text'
-          value={inputValue}
-          onChange={handleInputChange}
-          className='w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500'
-          placeholder='Enter a number (e.g., 42, 0x2A, 101010)'
-        />
-        {detectedBase && (
+        <div className="flex flex-wrap gap-4 mb-4">
+          <div className="flex-1">
+            <label className='block text-gray-700 text-sm font-bold mb-2'>
+              Enter a number:
+            </label>
+            <input
+              type='text'
+              value={inputValue}
+              onChange={handleInputChange}
+              className='w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500'
+              placeholder='Enter a number (e.g., 42, 0x2A, 101010)'
+            />
+          </div>
+          
+          <div className="w-48">
+            <label className='block text-gray-700 text-sm font-bold mb-2'>
+              Input Base:
+            </label>
+            <select
+              value={selectedBase}
+              onChange={handleBaseChange}
+              className='w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500'
+            >
+              <option value="auto">Auto Detect</option>
+              <option value="binary">Binary</option>
+              <option value="decimal">Decimal</option>
+              <option value="hexadecimal">Hexadecimal</option>
+            </select>
+          </div>
+        </div>
+        
+        {selectedBase === "auto" && detectedBase && (
           <p className='mt-2 text-sm text-gray-600'>
             Detected base: <span className='font-semibold'>{detectedBase}</span>
           </p>
@@ -98,8 +156,10 @@ export const BaseConverter = () => {
       </div>
 
       {(conversionResults.decimal || conversionResults.hex || conversionResults.binary) && (
-        <div>
-          <div className='flex justify-between items-center p-1 bg-gray-50 rounded-md'>
+        <div className="space-y-2">
+          <h3 className="text-lg font-semibold mb-2">Conversion Results</h3>
+          
+          <div className='flex justify-between items-center p-2 bg-gray-50 rounded-md'>
             <div>
               <span className='text-gray-500 text-sm'>Decimal:</span>
               <p className='font-mono text-sm'>{conversionResults.decimal}</p>
@@ -112,7 +172,7 @@ export const BaseConverter = () => {
             </button>
           </div>
 
-          <div className='flex justify-between items-center p-1 bg-gray-50 rounded-md'>
+          <div className='flex justify-between items-center p-2 bg-gray-50 rounded-md'>
             <div>
               <span className='text-gray-500 text-sm'>Hexadecimal:</span>
               <p className='font-mono text-sm'>{conversionResults.hex}</p>
@@ -125,7 +185,7 @@ export const BaseConverter = () => {
             </button>
           </div>
 
-          <div className='flex justify-between items-center p-1 bg-gray-50 rounded-md'>
+          <div className='flex justify-between items-center p-2 bg-gray-50 rounded-md'>
             <div>
               <span className='text-gray-500 text-sm'>Binary:</span>
               <p className='font-mono text-sm break-all'>{conversionResults.binary}</p>
