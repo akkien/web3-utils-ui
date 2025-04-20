@@ -167,6 +167,7 @@ export const Picker = () => {
       {selectedOption && (
         <div className='mt-8 p-6 bg-gray-50 rounded-lg border border-gray-200'>
           {selectedOption === "eth_tx" && currentOption?.component}
+          {selectedOption === "eth_abi" && currentOption?.component}
         </div>
       )}
     </div>
