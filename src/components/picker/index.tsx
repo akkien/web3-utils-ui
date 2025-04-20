@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import BaseConverter from "../tools/base-convert";
 
 // Define a hierarchical structure for topics with up to 3 levels
 const topics = [
@@ -12,7 +13,7 @@ const topics = [
         id: "ethereum",
         name: "Ethereum",
         options: [
-          { id: "eth_tx", name: "Transactions" },
+          { id: "eth_tx", name: "Transactions", component: <BaseConverter /> },
           { id: "eth_abi", name: "ABI Encoding" },
           { id: "eth_sig", name: "Signatures" },
         ],
@@ -126,6 +127,7 @@ export const Picker = () => {
   // Find the current topic and subtopic objects
   const currentTopic = topics.find((t) => t.id === selectedTopic);
   const currentSubtopic = currentTopic?.subtopics?.find((s) => s.id === selectedSubtopic);
+  const currentOption = currentSubtopic?.options?.find((s) => s.id === selectedOption);
 
   return (
     <div className='w-full'>
@@ -202,17 +204,7 @@ export const Picker = () => {
       {/* Content area for selected option */}
       {selectedOption && (
         <div className='mt-8 p-6 bg-gray-50 rounded-lg border border-gray-200'>
-          <div className='mb-4'>
-            <div className='text-sm text-gray-500 mb-1'>Selected path:</div>
-            <div className='font-medium'>
-              {currentTopic?.name} {" > "}
-              {currentSubtopic?.name} {" > "}
-              {currentSubtopic?.options.find((o) => o.id === selectedOption)?.name}
-            </div>
-          </div>
-          <h3 className='text-lg font-semibold mb-4'>Content for: {selectedOption}</h3>
-          <p className='text-gray-600'>Here you would display the component or content for the selected option.</p>
-          {/* Here you can conditionally render components based on the selectedOption ID */}
+          {selectedOption === "eth_tx" && currentOption?.component}
         </div>
       )}
     </div>
