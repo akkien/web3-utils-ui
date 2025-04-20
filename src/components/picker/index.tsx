@@ -126,110 +126,25 @@ export const Picker = () => {
   // Handle first level selection
   const handleTopicClick = (topicId: string) => {
     setSelectedTopic(topicId);
-    setSelectedSubtopic(null); // Reset subtopic selection
-    setSelectedOption(null); // Reset option selection
+    setSelectedSubtopic(null);
+    setSelectedOption(null);
   };
 
   // Handle second level selection
   const handleSubtopicClick = (subtopicId: string) => {
     setSelectedSubtopic(subtopicId);
-    setSelectedOption(null); // Reset option selection
+    setSelectedOption(null);
   };
 
   // Handle third level selection
   const handleOptionClick = (optionId: string) => {
     setSelectedOption(optionId);
-    // Here you can implement what happens when a final option is selected
     console.log(`Selected option: ${optionId}`);
   };
 
-  // Render the content based on current selection
-  const renderContent = () => {
-    // If no topic selected, show all topics
-    if (!selectedTopic) {
-      return (
-        <div className="flex flex-wrap gap-3 mt-4">
-          {topics.map((topic) => (
-            <button
-              key={topic.id}
-              className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2 px-4 rounded-3xl transition-all"
-              onClick={() => handleTopicClick(topic.id)}
-            >
-              {topic.name}
-            </button>
-          ))}
-        </div>
-      );
-    }
-
-    // Find the selected topic
-    const topic = topics.find((t) => t.id === selectedTopic);
-    if (!topic) return null;
-
-    // If no subtopic selected, show subtopics for the selected topic
-    if (!selectedSubtopic) {
-      return (
-        <div>
-          <div className="flex items-center mb-4">
-            <button 
-              className="mr-2 text-blue-500 hover:text-blue-700" 
-              onClick={() => setSelectedTopic(null)}
-            >
-              ← Back
-            </button>
-            <h2 className="text-lg font-bold">{topic.name}</h2>
-          </div>
-          
-          <div className="flex flex-wrap gap-3">
-            {topic.subtopics.map((subtopic) => (
-              <button
-                key={subtopic.id}
-                className="bg-blue-100 hover:bg-blue-200 text-blue-800 font-medium py-2 px-4 rounded-3xl transition-all"
-                onClick={() => handleSubtopicClick(subtopic.id)}
-              >
-                {subtopic.name}
-              </button>
-            ))}
-          </div>
-        </div>
-      );
-    }
-
-    // Find the selected subtopic
-    const subtopic = topic.subtopics.find((s) => s.id === selectedSubtopic);
-    if (!subtopic) return null;
-
-    // Show options for the selected subtopic
-    return (
-      <div>
-        <div className="flex items-center mb-4">
-          <button 
-            className="mr-2 text-blue-500 hover:text-blue-700" 
-            onClick={() => setSelectedSubtopic(null)}
-          >
-            ← Back
-          </button>
-          <h2 className="text-lg font-bold">{topic.name} / {subtopic.name}</h2>
-        </div>
-        
-        <div className="flex flex-wrap gap-3">
-          {subtopic.options.map((option) => (
-            <button
-              key={option.id}
-              className={`${
-                selectedOption === option.id
-                  ? "bg-green-500 text-white"
-                  : "bg-green-100 hover:bg-green-200 text-green-800"
-              } font-medium py-2 px-4 rounded-3xl transition-all`}
-              onClick={() => handleOptionClick(option.id)}
-            >
-              {option.name}
-            </button>
-          ))}
-        </div>
-      </div>
-    );
-  };
+  // Find the current topic and subtopic objects
+  const currentTopic = topics.find((t) => t.id === selectedTopic);
+  const currentSubtopic = currentTopic?.subtopics?.find((s) => s.id === selectedSubtopic);
 
   return (
     <div className="w-full">
@@ -238,10 +153,84 @@ export const Picker = () => {
         <p className="text-gray-600">Select a topic to explore blockchain utilities and tools</p>
       </div>
       
-      {renderContent()}
+      {/* First level - Main Topics */}
+      <div className="mb-6">
+        <h2 className="text-sm uppercase tracking-wider text-gray-500 mb-3 font-medium">Topics</h2>
+        <div className="flex flex-wrap gap-3">
+          {topics.map((topic) => (
+            <button
+              key={topic.id}
+              className={`
+                py-2 px-4 rounded-3xl transition-all
+                ${selectedTopic === topic.id 
+                  ? "bg-blue-500 text-white font-bold" 
+                  : "bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium"}
+              `}
+              onClick={() => handleTopicClick(topic.id)}
+            >
+              {topic.name}
+            </button>
+          ))}
+        </div>
+      </div>
       
+      {/* Second level - Subtopics (show only if a topic is selected) */}
+      {selectedTopic && (
+        <div className="mb-6">
+          <h2 className="text-sm uppercase tracking-wider text-gray-500 mb-3 font-medium">Categories</h2>
+          <div className="flex flex-wrap gap-3">
+            {currentTopic?.subtopics.map((subtopic) => (
+              <button
+                key={subtopic.id}
+                className={`
+                  py-2 px-4 rounded-3xl transition-all
+                  ${selectedSubtopic === subtopic.id 
+                    ? "bg-purple-500 text-white font-bold" 
+                    : "bg-blue-100 hover:bg-blue-200 text-blue-800 font-medium"}
+                `}
+                onClick={() => handleSubtopicClick(subtopic.id)}
+              >
+                {subtopic.name}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+      
+      {/* Third level - Options (show only if a subtopic is selected) */}
+      {selectedSubtopic && currentSubtopic && (
+        <div className="mb-6">
+          <h2 className="text-sm uppercase tracking-wider text-gray-500 mb-3 font-medium">Options</h2>
+          <div className="flex flex-wrap gap-3">
+            {currentSubtopic.options.map((option) => (
+              <button
+                key={option.id}
+                className={`
+                  py-2 px-4 rounded-3xl transition-all
+                  ${selectedOption === option.id 
+                    ? "bg-green-500 text-white font-bold" 
+                    : "bg-green-100 hover:bg-green-200 text-green-800 font-medium"}
+                `}
+                onClick={() => handleOptionClick(option.id)}
+              >
+                {option.name}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+      
+      {/* Content area for selected option */}
       {selectedOption && (
         <div className="mt-8 p-6 bg-gray-50 rounded-lg border border-gray-200">
+          <div className="mb-4">
+            <div className="text-sm text-gray-500 mb-1">Selected path:</div>
+            <div className="font-medium">
+              {currentTopic?.name} {' > '} 
+              {currentSubtopic?.name} {' > '} 
+              {currentSubtopic?.options.find(o => o.id === selectedOption)?.name}
+            </div>
+          </div>
           <h3 className="text-lg font-semibold mb-4">Content for: {selectedOption}</h3>
           <p className="text-gray-600">Here you would display the component or content for the selected option.</p>
           {/* Here you can conditionally render components based on the selectedOption ID */}
