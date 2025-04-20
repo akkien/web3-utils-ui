@@ -156,7 +156,7 @@ export const Picker = () => {
       </div>
 
       {/* First level - Main Topics */}
-      <div className='mb-4'>
+      <div className='mb-2'>
         <div className='flex flex-wrap gap-3'>
           {topics.map((topic) => (
             <button
@@ -179,7 +179,7 @@ export const Picker = () => {
 
       {/* Second level - Subtopics (always visible if a topic is selected) */}
       {selectedTopic && (
-        <div className='mb-4'>
+        <div className='mb-2'>
           <div className='flex flex-wrap gap-3'>
             {currentTopic?.subtopics.map((subtopic) => (
               <button
@@ -203,7 +203,7 @@ export const Picker = () => {
 
       {/* Third level - Options (always visible if a subtopic is selected) */}
       {selectedSubtopic && currentSubtopic && (
-        <div className='mb-4'>
+        <div className='mb-2'>
           <div className='flex flex-wrap gap-3'>
             {currentSubtopic.options.map((option) => (
               <button
