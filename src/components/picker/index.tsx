@@ -2,36 +2,28 @@
 
 import { useState, useEffect } from "react";
 import BaseConverter from "../tools/base-convert";
+import AbiDecoder from "../tools/abi-decode";
 
 // Define a hierarchical structure for topics with up to 3 levels
 const topics = [
   {
-    id: "blockchain",
-    name: "Blockchain",
+    id: "ethereum",
+    name: "Ethereum",
     subtopics: [
       {
         id: "ethereum",
         name: "Ethereum",
         options: [
           { id: "eth_tx", name: "Number Base Converter", component: <BaseConverter /> },
-          { id: "eth_abi", name: "ABI Encoding" },
+          { id: "eth_abi", name: "ABI Encoding", component: <AbiDecoder /> },
           { id: "eth_sig", name: "Signatures" },
-        ],
-      },
-      {
-        id: "solana",
-        name: "Solana",
-        options: [
-          { id: "solana_ix_data_to_discriminator", name: "Instruction Data to Discriminator" },
-          { id: "solana_ix_name_to_discriminator", name: "Instruction Name to Discriminator" },
-          { id: "solana_tx", name: "Transaction Format" },
         ],
       },
     ],
   },
   {
-    id: "defi",
-    name: "DeFi",
+    id: "solana",
+    name: "Solana",
     subtopics: [
       {
         id: "lending",
@@ -39,14 +31,6 @@ const topics = [
         options: [
           { id: "aave", name: "Aave Protocol" },
           { id: "compound", name: "Compound" },
-        ],
-      },
-      {
-        id: "exchange",
-        name: "Exchange",
-        options: [
-          { id: "amm", name: "AMM Swaps" },
-          { id: "orderbook", name: "Orderbook" },
         ],
       },
     ],
