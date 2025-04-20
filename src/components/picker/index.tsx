@@ -72,28 +72,6 @@ const topics = [
       },
     ],
   },
-  {
-    id: "dao",
-    name: "DAO",
-    subtopics: [
-      {
-        id: "governance",
-        name: "Governance",
-        options: [
-          { id: "voting_systems", name: "Voting Systems" },
-          { id: "proposals", name: "Proposal Mechanics" },
-        ],
-      },
-      {
-        id: "treasury",
-        name: "Treasury",
-        options: [
-          { id: "multisig", name: "Multisig" },
-          { id: "vaults", name: "Treasury Vaults" },
-        ],
-      },
-    ],
-  },
 ];
 
 export const Picker = () => {
@@ -151,10 +129,6 @@ export const Picker = () => {
 
   return (
     <div className='w-full'>
-      <div className='mb-8'>
-        <p className='text-gray-600'>Select a topic to explore blockchain utilities and tools</p>
-      </div>
-
       {/* First level - Main Topics */}
       <div className='mb-2'>
         <div className='flex flex-wrap gap-3'>
@@ -189,7 +163,7 @@ export const Picker = () => {
                   ${
                     selectedSubtopic === subtopic.id
                       ? "bg-purple-500 text-white font-bold"
-                      : "bg-blue-100 hover:bg-blue-200 text-blue-800 font-medium"
+                      : "bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium"
                   }
                 `}
                 onClick={() => handleSubtopicClick(subtopic.id)}
@@ -213,7 +187,7 @@ export const Picker = () => {
                   ${
                     selectedOption === option.id
                       ? "bg-green-500 text-white font-bold"
-                      : "bg-green-100 hover:bg-green-200 text-green-800 font-medium"
+                      : "bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium"
                   }
                 `}
                 onClick={() => handleOptionClick(option.id)}
