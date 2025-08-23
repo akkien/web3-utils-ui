@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 // import Wallet from "../web3";
 import { SiBuymeacoffee } from "react-icons/si";
-import { DocumentDuplicateIcon, CheckIcon } from "@heroicons/react/24/outline";
+import CopyComponent from "../copy";
 
 const Header = () => {
   const evmAddress = "0xDcb799a31E4CA56CBc224b92DA8721f973460e52";
@@ -78,27 +78,6 @@ const Header = () => {
         </div>
       </nav>
     </header>
-  );
-};
-
-const CopyComponent = ({ textToCopy }: { textToCopy: string }) => {
-  const [isCopied, setIsCopied] = useState(false);
-
-  const handleCopy = async () => {
-    try {
-      await navigator.clipboard.writeText(textToCopy);
-      setIsCopied(true);
-      setTimeout(() => setIsCopied(false), 2000); // Reset after 2 seconds
-    } catch (err) {
-      console.error("Failed to copy text: ", err);
-      // Handle error, e.g., show an error message
-    }
-  };
-
-  return (
-    <span onClick={handleCopy}>
-      {isCopied ? <CheckIcon className='size-4' /> : <DocumentDuplicateIcon className='size-4' />}
-    </span>
   );
 };
 

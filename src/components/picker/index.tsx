@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import BaseConverter from "../tools/base-convert";
 import AbiDecoder from "../tools/abi-decode";
+import AddressFormatter from "../tools/address";
 
 // Define a hierarchical structure for topics with up to 3 levels
 const topics = [
@@ -15,9 +16,10 @@ const topics = [
         name: "Ethereum",
         options: [
           { id: "eth_tx", name: "Number Base Converter", component: <BaseConverter /> },
-          { id: "eth_abi", name: "ABI Decoding", component: <AbiDecoder /> },
-          { id: "eth_sig", name: "Signatures" },
+          { id: "eth_abi", name: "ABI Decoder", component: <AbiDecoder /> },
+          { id: "eth_address", name: "Address Formatter", component: <AddressFormatter /> },
           { id: "eth_hash", name: "Hash" },
+          { id: "eth_sig", name: "Signatures" },
         ],
       },
     ],
@@ -160,6 +162,7 @@ export const Picker = () => {
         <div className='mt-8 p-6 bg-gray-50 rounded-lg border border-gray-200'>
           {selectedOption === "eth_tx" && currentOption?.component}
           {selectedOption === "eth_abi" && currentOption?.component}
+          {selectedOption === "eth_address" && currentOption?.component}
         </div>
       )}
     </div>
