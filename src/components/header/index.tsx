@@ -3,6 +3,8 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 // import Wallet from "../web3";
 import { SiBuymeacoffee } from "react-icons/si";
+import { FaGithub } from "react-icons/fa6";
+
 import CopyComponent from "../copy";
 
 const Header = () => {
@@ -43,12 +45,15 @@ const Header = () => {
             >
               App
             </Link> */}
-            {/* <Link
+            <Link
               href='/about'
               className='font-semibold bg-transparent px-4 py-1 rounded-2xl hover:bg-blue-200 hover:text-white transition duration-300 ease-in-out'
             >
               About
-            </Link> */}
+            </Link>
+            <Link href='https://github.com/akkien/web3-utils-ui' target='_blank' className='px-4 py-1 rounded-2xl'>
+              <FaGithub className='inline mr-2' />
+            </Link>
           </div>
           <div className='flex-2'>
             {/* <Wallet /> */}
