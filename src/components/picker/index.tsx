@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import BaseConverter from "../tools/base-convert";
 import AbiDecoder from "../tools/abi-decode";
 import AddressFormatter from "../tools/address";
+import HashGenerator from "../tools/hash";
 
 // Define a hierarchical structure for topics with up to 3 levels
 const topics = [
@@ -18,7 +19,7 @@ const topics = [
           { id: "eth_tx", name: "Number Base Converter", component: <BaseConverter /> },
           { id: "eth_abi", name: "ABI Decoder", component: <AbiDecoder /> },
           { id: "eth_address", name: "Address Formatter", component: <AddressFormatter /> },
-          { id: "eth_hash", name: "Hash" },
+          { id: "eth_hash", name: "Hash", component: <HashGenerator /> },
           { id: "eth_sig", name: "Signatures" },
         ],
       },
@@ -163,6 +164,7 @@ export const Picker = () => {
           {selectedOption === "eth_tx" && currentOption?.component}
           {selectedOption === "eth_abi" && currentOption?.component}
           {selectedOption === "eth_address" && currentOption?.component}
+          {selectedOption === "eth_hash" && currentOption?.component}
         </div>
       )}
     </div>
