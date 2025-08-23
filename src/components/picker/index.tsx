@@ -5,6 +5,7 @@ import BaseConverter from "../tools/base-convert";
 import AbiDecoder from "../tools/abi-decode";
 import AddressFormatter from "../tools/address";
 import HashGenerator from "../tools/hash";
+import SignatureVerifier from "../tools/verify-signature";
 
 // Define a hierarchical structure for topics with up to 3 levels
 const topics = [
@@ -20,7 +21,8 @@ const topics = [
           { id: "eth_abi", name: "ABI Decoder", component: <AbiDecoder /> },
           { id: "eth_address", name: "Address Formatter", component: <AddressFormatter /> },
           { id: "eth_hash", name: "Hash", component: <HashGenerator /> },
-          { id: "eth_sig", name: "Signatures" },
+          { id: "eth_sign", name: "Sign Message" },
+          { id: "eth_verify", name: "Verify Signatures", component: <SignatureVerifier /> },
         ],
       },
     ],
@@ -165,6 +167,7 @@ export const Picker = () => {
           {selectedOption === "eth_abi" && currentOption?.component}
           {selectedOption === "eth_address" && currentOption?.component}
           {selectedOption === "eth_hash" && currentOption?.component}
+          {selectedOption === "eth_verify" && currentOption?.component}
         </div>
       )}
     </div>
