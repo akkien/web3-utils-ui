@@ -1,10 +1,15 @@
 "use client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import Wallet from "../web3";
+// import Wallet from "../web3";
+import { SiBuymeacoffee } from "react-icons/si";
+import { DocumentDuplicateIcon, CheckIcon } from "@heroicons/react/24/outline";
 
 const Header = () => {
+  const evmAddress = "0xDcb799a31E4CA56CBc224b92DA8721f973460e52";
+  const solAddress = "5uMES4qFXAfnNKnpyEZPzRCjMkoLkGhDDa6rAf1ckRi5";
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   useEffect(() => {
     const handleScroll = () => {
       if (window.scrollY > 50) {
@@ -38,19 +43,62 @@ const Header = () => {
             >
               App
             </Link> */}
-            <Link
+            {/* <Link
               href='/about'
               className='font-semibold bg-transparent px-4 py-1 rounded-2xl hover:bg-blue-200 hover:text-white transition duration-300 ease-in-out'
             >
               About
-            </Link>
+            </Link> */}
           </div>
           <div className='flex-2'>
-            <Wallet />
+            {/* <Wallet /> */}
+            <SiBuymeacoffee
+              className='text-2xl hover:cursor-pointer text-amber-400'
+              onClick={() => setIsModalOpen(!isModalOpen)}
+            />
+            {isModalOpen && (
+              <div
+                className='fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50'
+                onClick={() => setIsModalOpen(false)}
+              >
+                <div className='bg-white p-6 rounded-lg shadow-lg' onClick={(e) => e.stopPropagation()}>
+                  <p className='mb-4 font-bold text-center'>Buy me a cup of coffee ?!</p>
+                  <div className='flex gap-4 mt-4 justify-between px-4 py-2 bg-gray-400 text-white rounded-lg hover:bg-gray-500 transition duration-300 ease-in-out'>
+                    EVM chains: {evmAddress.slice(0, 6)}...{evmAddress.slice(-4)}
+                    <CopyComponent textToCopy={evmAddress} />
+                  </div>
+                  <div className='flex gap-4 mt-4 justify-between px-4 py-2 bg-teal-400 text-white rounded-lg hover:bg-teal-500 transition duration-300 ease-in-out'>
+                    Solana: {solAddress.slice(0, 6)}...{solAddress.slice(-4)}
+                    <CopyComponent textToCopy={solAddress} />
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </nav>
     </header>
+  );
+};
+
+const CopyComponent = ({ textToCopy }: { textToCopy: string }) => {
+  const [isCopied, setIsCopied] = useState(false);
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(textToCopy);
+      setIsCopied(true);
+      setTimeout(() => setIsCopied(false), 2000); // Reset after 2 seconds
+    } catch (err) {
+      console.error("Failed to copy text: ", err);
+      // Handle error, e.g., show an error message
+    }
+  };
+
+  return (
+    <span onClick={handleCopy}>
+      {isCopied ? <CheckIcon className='size-4' /> : <DocumentDuplicateIcon className='size-4' />}
+    </span>
   );
 };
 

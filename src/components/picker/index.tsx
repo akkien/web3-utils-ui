@@ -8,37 +8,29 @@ import AbiDecoder from "../tools/abi-decode";
 const topics = [
   {
     id: "ethereum",
-    name: "Ethereum",
+    name: "",
     subtopics: [
       {
         id: "ethereum",
         name: "Ethereum",
         options: [
           { id: "eth_tx", name: "Number Base Converter", component: <BaseConverter /> },
-          { id: "eth_abi", name: "ABI Encoding", component: <AbiDecoder /> },
+          { id: "eth_abi", name: "ABI Decoding", component: <AbiDecoder /> },
           { id: "eth_sig", name: "Signatures" },
+          { id: "eth_hash", name: "Hash" },
         ],
       },
     ],
   },
-  {
-    id: "solana",
-    name: "Solana",
-    subtopics: [
-      {
-        id: "lending",
-        name: "Lending",
-        options: [
-          { id: "aave", name: "Aave Protocol" },
-          { id: "compound", name: "Compound" },
-        ],
-      },
-    ],
-  },
+  // {
+  //   id: "other-topic",
+  //   name: "Other Topics",
+  //   subtopics: [],
+  // },
 ];
 
 export const Picker = () => {
-  const [selectedTopic, setSelectedTopic] = useState<string | null>("blockchain"); // Default selected topic
+  const [selectedTopic, setSelectedTopic] = useState<string | null>("ethereum"); // Default selected topic
   const [selectedSubtopic, setSelectedSubtopic] = useState<string | null>(null);
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
 
@@ -94,7 +86,7 @@ export const Picker = () => {
   return (
     <div className='w-full'>
       {/* First level - Main Topics */}
-      <div className='mb-2'>
+      <div className='mb-2 hidden'>
         <div className='flex flex-wrap gap-3'>
           {topics.map((topic) => (
             <button
@@ -147,7 +139,7 @@ export const Picker = () => {
               <button
                 key={option.id}
                 className={`
-                  py-1 px-4 rounded-3xl transition-all
+                  py-1 px-4 rounded-3xl transition-all text-sm
                   ${
                     selectedOption === option.id
                       ? "bg-green-500 text-white font-bold"
