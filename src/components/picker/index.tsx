@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import BaseConverter from "../tools/base-convert";
 import AbiDecoder from "../tools/abi-decode";
+import AbiEncode from "../tools/abi-encode";
 import AddressFormatter from "../tools/address-format";
 import AddressGenerator from "../tools/address-generate";
 import HashGenerator from "../tools/hash";
@@ -20,7 +21,8 @@ const topics = [
         name: "Ethereum",
         options: [
           { id: "eth_tx", name: "Number Base Converter", component: <BaseConverter /> },
-          { id: "eth_abi", name: "ABI Decoder", component: <AbiDecoder /> },
+          { id: "eth_abi_decode", name: "ABI Decoder", component: <AbiDecoder /> },
+          { id: "eth_abi_encode", name: "ABI Encoder", component: <AbiEncode /> },
           { id: "eth_address_generator", name: "Address Generator", component: <AddressGenerator /> },
           { id: "eth_address_format", name: "Address Formatter", component: <AddressFormatter /> },
           { id: "eth_hash", name: "Hash", component: <HashGenerator /> },
@@ -167,7 +169,8 @@ export const Picker = () => {
       {selectedOption && (
         <div className='mt-8 p-6 bg-gray-50 rounded-lg border border-gray-200'>
           {selectedOption === "eth_tx" && currentOption?.component}
-          {selectedOption === "eth_abi" && currentOption?.component}
+          {selectedOption === "eth_abi_decode" && currentOption?.component}
+          {selectedOption === "eth_abi_encode" && currentOption?.component}
           {selectedOption === "eth_address_generator" && currentOption?.component}
           {selectedOption === "eth_address_format" && currentOption?.component}
           {selectedOption === "eth_hash" && currentOption?.component}
