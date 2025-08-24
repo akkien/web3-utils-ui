@@ -81,14 +81,28 @@ export default function ErrorDecode() {
     setDecodedError(null);
 
     try {
+      // Parse the ABI fresh to ensure we have the latest
+      let currentParsedABI = parsedABI;
+      if (parsedABI.length === 0) {
+        currentParsedABI = parseContractABI(contractABI);
+        setParsedABI(currentParsedABI);
+      }
+
+      // Log available error signatures for debugging
+      const availableErrors = currentParsedABI.map((err) => ({
+        name: err.name,
+        signature: `${err.name}(${err.inputs.map((input) => input.type).join(",")})`,
+      }));
+      console.log("Available error signatures:", availableErrors);
+
       // Use viem to decode the error
       const decoded = decodeErrorResult({
-        abi: parsedABI,
+        abi: currentParsedABI,
         data: errorData.trim() as `0x${string}`,
       });
 
       // Find the matching error in ABI for signature
-      const errorDef = parsedABI.find((err) => err.name === decoded.errorName);
+      const errorDef = currentParsedABI.find((err) => err.name === decoded.errorName);
       const signature = errorDef
         ? `${errorDef.name}(${errorDef.inputs.map((input) => input.type).join(",")})`
         : decoded.errorName || "Unknown";
@@ -135,7 +149,26 @@ export default function ErrorDecode() {
         formattedArgs,
       });
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to decode error");
+      console.error("Decode error:", err);
+      if (err instanceof Error) {
+        if (err.message.includes("Unable to decode")) {
+          setError(
+            "Unable to decode error data. Please check that the error data matches one of the errors in your ABI."
+          );
+        } else if (err.message.includes("Invalid hex")) {
+          setError(
+            "Invalid hex format for error data. Please ensure it starts with '0x' and contains valid hex characters."
+          );
+        } else if (err.message.includes("signature")) {
+          setError(
+            "Error signature not found in ABI. Make sure the error data corresponds to an error defined in your contract ABI."
+          );
+        } else {
+          setError(`Decode failed: ${err.message}`);
+        }
+      } else {
+        setError("Failed to decode error. Please check your inputs.");
+      }
     } finally {
       setIsLoading(false);
     }
@@ -218,6 +251,20 @@ export default function ErrorDecode() {
           </div>
         )}
 
+        {/* Show parsed errors for debugging */}
+        {parsedABI.length > 0 && (
+          <div className='p-4 bg-blue-50 border border-blue-200 rounded-md'>
+            <h3 className='text-sm font-medium text-blue-800 mb-2'>Available Errors in ABI ({parsedABI.length})</h3>
+            <div className='space-y-1'>
+              {parsedABI.map((error, index) => (
+                <div key={index} className='text-sm text-blue-700 font-mono'>
+                  {error.name}({error.inputs.map((input) => input.type).join(",")})
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Decoded Error Results */}
         {decodedError && (
           <div className='space-y-4'>
@@ -284,17 +331,6 @@ export default function ErrorDecode() {
                 </div>
               </div>
             )}
-
-            {/* Raw Decoded Arguments (Viem format) */}
-            <div className='p-4 bg-purple-50 border border-purple-200 rounded-md'>
-              <div className='flex justify-between items-center mb-3'>
-                <h3 className='text-sm font-medium text-purple-800'>Raw Decoded Arguments (Viem format)</h3>
-                <CopyComponent textToCopy={JSON.stringify(decodedError.args, null, 2)} />
-              </div>
-              <pre className='font-mono text-sm text-purple-700 bg-white p-3 rounded border overflow-auto max-h-96'>
-                {JSON.stringify(decodedError.args, null, 2)}
-              </pre>
-            </div>
           </div>
         )}
       </div>
