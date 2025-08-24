@@ -130,7 +130,7 @@ export const AbiDecoder = () => {
   };
 
   return (
-    <div className='space-y-6'>
+    <div className='space-y-2'>
       <h2 className='text-2xl font-bold'>ABI Decoder</h2>
 
       <div>
@@ -138,7 +138,8 @@ export const AbiDecoder = () => {
         <textarea
           value={abi}
           onChange={handleAbiChange}
-          className='w-full h-40 p-2 border border-gray-300 rounded-md font-mono text-sm focus:ring-blue-500 focus:border-blue-500'
+          rows={4}
+          className='w-full p-2 border border-gray-300 rounded-md font-mono text-sm focus:ring-blue-500 focus:border-blue-500'
           placeholder='[{"inputs":[{"name":"recipient","type":"address"},{"name":"amount","type":"uint256"}],"name":"transfer","outputs":[{"name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"}]'
         />
       </div>

@@ -205,8 +205,8 @@ export default function EventDecode() {
   };
 
   return (
-    <div className='space-y-6'>
-      <h2 className='text-2xl font-bold text-gray-900 mb-6'>Event Decoder</h2>
+    <div className='space-y-2'>
+      <h2 className='text-2xl font-bold text-gray-900'>Event Decoder</h2>
 
       <div className='space-y-4'>
         {/* Contract ABI */}
@@ -229,7 +229,7 @@ export default function EventDecode() {
               }
             }}
             placeholder='[{"anonymous":false,"inputs":[{"indexed":true,"name":"from","type":"address"},{"indexed":true,"name":"to","type":"address"},{"indexed":false,"name":"value","type":"uint256"}],"name":"Transfer","type":"event"}, ...]'
-            rows={6}
+            rows={4}
             className='w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-mono text-sm'
           />
         </div>

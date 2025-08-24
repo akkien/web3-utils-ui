@@ -5,6 +5,7 @@ import BaseConverter from "../tools/base-convert";
 import AbiDecoder from "../tools/abi-decode";
 import AbiEncode from "../tools/abi-encode";
 import EventDecode from "../tools/event-decode";
+import ErrorDecode from "../tools/error-decode";
 import AddressFormatter from "../tools/address-format";
 import AddressGenerator from "../tools/address-generate";
 import HashGenerator from "../tools/hash";
@@ -21,10 +22,11 @@ const topics = [
         id: "ethereum",
         name: "Ethereum",
         options: [
-          { id: "eth_tx", name: "Number Base Converter", component: <BaseConverter /> },
+          { id: "eth_base_convert", name: "Number Base Converter", component: <BaseConverter /> },
           { id: "eth_abi_decode", name: "ABI Decoder", component: <AbiDecoder /> },
           { id: "eth_abi_encode", name: "ABI Encoder", component: <AbiEncode /> },
           { id: "eth_event_decode", name: "Event Decoder", component: <EventDecode /> },
+          { id: "eth_error_decode", name: "Error Decoder", component: <ErrorDecode /> },
           { id: "eth_address_generator", name: "Address Generator", component: <AddressGenerator /> },
           { id: "eth_address_format", name: "Address Formatter", component: <AddressFormatter /> },
           { id: "eth_hash", name: "Hash", component: <HashGenerator /> },
@@ -170,10 +172,11 @@ export const Picker = () => {
       {/* Content area for selected option */}
       {selectedOption && (
         <div className='mt-8 p-6 bg-gray-50 rounded-lg border border-gray-200'>
-          {selectedOption === "eth_tx" && currentOption?.component}
+          {selectedOption === "eth_base_convert" && currentOption?.component}
           {selectedOption === "eth_abi_decode" && currentOption?.component}
           {selectedOption === "eth_abi_encode" && currentOption?.component}
           {selectedOption === "eth_event_decode" && currentOption?.component}
+          {selectedOption === "eth_error_decode" && currentOption?.component}
           {selectedOption === "eth_address_generator" && currentOption?.component}
           {selectedOption === "eth_address_format" && currentOption?.component}
           {selectedOption === "eth_hash" && currentOption?.component}

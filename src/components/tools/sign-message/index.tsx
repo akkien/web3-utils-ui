@@ -59,7 +59,7 @@ export default function SignMessage() {
   };
 
   return (
-    <div className='space-y-6'>
+    <div className='space-y-2'>
       <h2 className='text-2xl font-bold text-gray-900 mb-6'>Message Signer</h2>
 
       <div className='space-y-3'>

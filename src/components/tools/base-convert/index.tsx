@@ -112,15 +112,13 @@ export const BaseConverter = () => {
   };
 
   return (
-    <>
-      <h2 className='text-2xl font-bold mb-6'>Number Base Converter</h2>
+    <div className='space-y-2'>
+      <h2 className='text-2xl font-bold mb-2'>Number Base Converter</h2>
 
       <div className='mb-6'>
-        <div className="flex flex-wrap gap-4 mb-4">
-          <div className="flex-1">
-            <label className='block text-gray-700 text-sm font-bold mb-2'>
-              Enter a number:
-            </label>
+        <div className='flex flex-wrap gap-4 mb-4'>
+          <div className='flex-1'>
+            <label className='block text-gray-700 text-sm font-bold mb-2'>Enter a number:</label>
             <input
               type='text'
               value={inputValue}
@@ -129,24 +127,22 @@ export const BaseConverter = () => {
               placeholder='Enter a number (e.g., 42, 0x2A, 101010)'
             />
           </div>
-          
-          <div className="w-48">
-            <label className='block text-gray-700 text-sm font-bold mb-2'>
-              Input Base:
-            </label>
+
+          <div className='w-48'>
+            <label className='block text-gray-700 text-sm font-bold mb-2'>Input Base:</label>
             <select
               value={selectedBase}
               onChange={handleBaseChange}
               className='w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500'
             >
-              <option value="auto">Auto Detect</option>
-              <option value="binary">Binary</option>
-              <option value="decimal">Decimal</option>
-              <option value="hexadecimal">Hexadecimal</option>
+              <option value='auto'>Auto Detect</option>
+              <option value='binary'>Binary</option>
+              <option value='decimal'>Decimal</option>
+              <option value='hexadecimal'>Hexadecimal</option>
             </select>
           </div>
         </div>
-        
+
         {selectedBase === "auto" && detectedBase && (
           <p className='mt-2 text-sm text-gray-600'>
             Detected base: <span className='font-semibold'>{detectedBase}</span>
@@ -156,9 +152,9 @@ export const BaseConverter = () => {
       </div>
 
       {(conversionResults.decimal || conversionResults.hex || conversionResults.binary) && (
-        <div className="space-y-2">
-          <h3 className="text-lg font-semibold mb-2">Conversion Results</h3>
-          
+        <div className='space-y-2'>
+          <h3 className='text-lg font-semibold mb-2'>Conversion Results</h3>
+
           <div className='flex justify-between items-center p-2 bg-gray-50 rounded-md'>
             <div>
               <span className='text-gray-500 text-sm'>Decimal:</span>
@@ -199,7 +195,7 @@ export const BaseConverter = () => {
           </div>
         </div>
       )}
-    </>
+    </div>
   );
 };
 

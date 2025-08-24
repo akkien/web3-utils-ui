@@ -321,8 +321,8 @@ export default function AbiEncode() {
   };
 
   return (
-    <div className='space-y-6'>
-      <h2 className='text-2xl font-bold text-gray-900 mb-6'>ABI Encoder</h2>
+    <div className='space-y-2'>
+      <h2 className='text-2xl font-bold text-gray-900'>ABI Encoder</h2>
 
       <div className='space-y-2'>
         {/* Contract ABI */}
@@ -354,7 +354,7 @@ export default function AbiEncode() {
               }
             }}
             placeholder='[{"inputs":[{"name":"recipient","type":"address"},{"name":"amount","type":"uint256"}],"name":"transfer","outputs":[{"name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"}, {"inputs":[{"name":"spender","type":"address"},{"name":"amount","type":"uint256"}],"name":"approve","outputs":[{"name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"}]'
-            rows={6}
+            rows={4}
             className='w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-mono text-sm'
           />
         </div>
