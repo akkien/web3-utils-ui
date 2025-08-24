@@ -118,9 +118,50 @@ export default function AbiEncode() {
         // Parse JSON parameters
         if (jsonParameters.trim()) {
           try {
-            const jsonValues = JSON.parse(jsonParameters);
+            // First try to parse as standard JSON
+            let jsonValues;
+            try {
+              jsonValues = JSON.parse(jsonParameters);
+            } catch (jsonErr) {
+              // If JSON parsing fails, try to parse as flexible array format
+              let cleanInput = jsonParameters.trim();
+
+              // Remove surrounding brackets if present
+              if (cleanInput.startsWith("[") && cleanInput.endsWith("]")) {
+                cleanInput = cleanInput.slice(1, -1);
+              }
+
+              // Split by comma and process each value
+              const items = cleanInput.split(",").map((item) => {
+                const cleaned = item.trim();
+
+                // Handle quoted strings
+                if (
+                  (cleaned.startsWith('"') && cleaned.endsWith('"')) ||
+                  (cleaned.startsWith("'") && cleaned.endsWith("'"))
+                ) {
+                  return cleaned.slice(1, -1); // Remove quotes
+                }
+
+                // Handle numbers
+                if (/^\d+$/.test(cleaned)) {
+                  return cleaned;
+                }
+
+                // Handle booleans
+                if (cleaned.toLowerCase() === "true" || cleaned.toLowerCase() === "false") {
+                  return cleaned.toLowerCase() === "true";
+                }
+
+                // Return as string for other cases
+                return cleaned;
+              });
+
+              jsonValues = items;
+            }
+
             if (!Array.isArray(jsonValues)) {
-              throw new Error("JSON parameters must be an array");
+              throw new Error("Parameters must be an array");
             }
 
             if (jsonValues.length !== functionDef.inputs.length) {
@@ -140,10 +181,12 @@ export default function AbiEncode() {
               }
             }
           } catch (err) {
-            if (err instanceof SyntaxError) {
-              throw new Error("Invalid JSON format for parameters");
+            if (err instanceof Error) {
+              throw err;
             }
-            throw err;
+            throw new Error(
+              'Invalid format for parameters. Use JSON array format: ["value1", "value2"] or comma-separated: "value1", "value2"'
+            );
           }
         } else {
           throw new Error("Please enter JSON parameters");
@@ -190,6 +233,7 @@ export default function AbiEncode() {
     // Handle arrays
     if (type.includes("[]")) {
       try {
+        // First try to parse as JSON
         const arrayValues = JSON.parse(value);
         if (!Array.isArray(arrayValues)) {
           throw new Error("Array values must be in JSON array format");
@@ -197,33 +241,70 @@ export default function AbiEncode() {
         const baseType = type.replace("[]", "");
         return arrayValues.map((v) => parseParameterValue(baseType, String(v)));
       } catch (err) {
-        throw new Error('Invalid array format. Use JSON array syntax: ["value1", "value2"]');
+        // Try to parse as comma-separated values with flexible quotes
+        let cleanValue = value.trim();
+
+        // Remove surrounding brackets if present
+        if (cleanValue.startsWith("[") && cleanValue.endsWith("]")) {
+          cleanValue = cleanValue.slice(1, -1);
+        }
+
+        if (cleanValue.includes(",")) {
+          // Split by comma and clean up quotes
+          const items = cleanValue.split(",").map((item) => {
+            let cleaned = item.trim();
+            // Remove surrounding quotes (both single and double)
+            if (
+              (cleaned.startsWith('"') && cleaned.endsWith('"')) ||
+              (cleaned.startsWith("'") && cleaned.endsWith("'"))
+            ) {
+              cleaned = cleaned.slice(1, -1);
+            }
+            return cleaned;
+          });
+
+          const baseType = type.replace("[]", "");
+          return items.map((item) => parseParameterValue(baseType, item));
+        } else {
+          throw new Error(
+            'Invalid array format. Use JSON array syntax: ["value1", "value2"] or comma-separated: "value1", "value2"'
+          );
+        }
       }
+    }
+
+    // Clean up quotes for individual values
+    let cleanValue = value.trim();
+    if (
+      (cleanValue.startsWith('"') && cleanValue.endsWith('"')) ||
+      (cleanValue.startsWith("'") && cleanValue.endsWith("'"))
+    ) {
+      cleanValue = cleanValue.slice(1, -1);
     }
 
     // Handle different types
     if (type.startsWith("uint") || type.startsWith("int")) {
-      const num = ethers.getBigInt(value);
+      const num = ethers.getBigInt(cleanValue);
       return num;
     } else if (type === "bool") {
-      if (value.toLowerCase() === "true") return true;
-      if (value.toLowerCase() === "false") return false;
+      if (cleanValue.toLowerCase() === "true") return true;
+      if (cleanValue.toLowerCase() === "false") return false;
       throw new Error("Boolean value must be 'true' or 'false'");
     } else if (type === "address") {
-      if (!ethers.isAddress(value)) {
+      if (!ethers.isAddress(cleanValue)) {
         throw new Error("Invalid Ethereum address");
       }
-      return value;
+      return cleanValue;
     } else if (type.startsWith("bytes")) {
-      if (!ethers.isHexString(value)) {
+      if (!ethers.isHexString(cleanValue)) {
         throw new Error("Bytes value must be a valid hex string");
       }
-      return value;
+      return cleanValue;
     } else if (type === "string") {
-      return value;
+      return cleanValue;
     } else {
       // For other types, try to parse as-is
-      return value;
+      return cleanValue;
     }
   };
 
@@ -371,7 +452,7 @@ export default function AbiEncode() {
               // JSON Parameter Input
               <div>
                 <label htmlFor='jsonParameters' className='block text-xs font-medium text-gray-600 mb-2'>
-                  Parameters as JSON Array
+                  Parameters as JSON Array or Comma-Separated
                 </label>
                 <textarea
                   id='jsonParameters'
@@ -469,8 +550,18 @@ export default function AbiEncode() {
             • Choose between <strong>Individual Fields</strong> or <strong>JSON Input</strong> for entering parameter
             values
           </li>
-          <li>• For JSON input: Enter values as an array in the same order as function parameters</li>
-          <li>• For arrays, use JSON format: [&quot;value1&quot;, &quot;value2&quot;] or [123, 456]</li>
+          <li>• For JSON input: Enter values as JSON array or comma-separated format</li>
+          <li>• JSON format: [&quot;value1&quot;, &quot;value2&quot;, 123, true]</li>
+          <li>• Comma-separated: &quot;value1&quot;, &quot;value2&quot;, 123, true</li>
+          <li>• String values support both single and double quotes: &quot;hello&quot; or &#39;hello&#39;</li>
+          <li>
+            • For arrays, use JSON format: [&quot;value1&quot;, &quot;value2&quot;] or comma-separated:
+            &quot;value1&quot;, &quot;value2&quot;
+          </li>
+          <li>
+            • Array items can use mixed quotes: [&quot;hello&quot;, &#39;world&#39;] or &quot;hello&quot;,
+            &#39;world&#39;
+          </li>
           <li>• Addresses must be valid Ethereum addresses (42 characters starting with 0x)</li>
           <li>• The encoded data can be used directly in Ethereum transactions</li>
         </ul>
@@ -483,35 +574,35 @@ function getPlaceholder(type: string): string {
   if (type.includes("[]")) {
     const baseType = type.replace("[]", "");
     if (baseType === "uint256" || baseType.startsWith("uint") || baseType.startsWith("int")) {
-      return "[123, 456]";
+      return "[123, 456] or 123, 456";
     } else if (baseType === "address") {
-      return '["0x123...", "0x456..."]';
+      return "[\"0x123...\", '0x456...'] or \"0x123...\", '0x456...'";
     } else if (baseType === "string") {
-      return '["hello", "world"]';
+      return "[\"hello\", 'world'] or \"hello\", 'world'";
     } else {
-      return '["value1", "value2"]';
+      return "[\"value1\", 'value2'] or \"value1\", 'value2'";
     }
   }
 
   switch (type) {
     case "address":
-      return "0x742d35Cc6634C0532925a3b8D6E4CE";
+      return "\"0x742d35Cc6634C0532925a3b8D6E4CE\" or '0x742d35...'";
     case "bool":
-      return "true";
+      return "\"true\" or 'false'";
     case "string":
-      return "Hello World";
+      return "\"Hello World\" or 'Hello World'";
     case "bytes":
     case "bytes32":
     case "bytes20":
     case "bytes16":
     case "bytes8":
     case "bytes4":
-      return "0x1234567890abcdef";
+      return "\"0x1234567890abcdef\" or '0x1234...'";
     default:
       if (type.startsWith("uint") || type.startsWith("int")) {
-        return "1000000000000000000";
+        return "\"1000000000000000000\" or '1000...'";
       }
-      return "value";
+      return "\"value\" or 'value'";
   }
 }
 
@@ -546,11 +637,14 @@ function getJsonPlaceholder(inputs: ABIInput[]): string {
         return '"0x1234567890abcdef"';
       default:
         if (input.type.startsWith("uint") || input.type.startsWith("int")) {
-          return '"1000000000000000000"';
+          return "1000000000000000000";
         }
         return '"value"';
     }
   });
 
-  return `[${examples.join(", ")}]`;
+  const jsonFormat = `[${examples.join(", ")}]`;
+  const commaFormat = examples.join(", ");
+
+  return `${jsonFormat} or ${commaFormat}`;
 }
