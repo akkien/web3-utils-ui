@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { ethers } from "ethers";
+import CopyComponent from "@/components/copy";
 
 interface Parameter {
   name: string;
@@ -25,9 +26,10 @@ export default function AbiEncode() {
   const [functionName, setFunctionName] = useState("");
   const [abiSignature, setAbiSignature] = useState("");
   const [parameters, setParameters] = useState<Parameter[]>([]);
+  const [jsonParameters, setJsonParameters] = useState("");
+  const [useJsonInput, setUseJsonInput] = useState(false);
   const [encodedData, setEncodedData] = useState("");
   const [functionSelector, setFunctionSelector] = useState("");
-  const [functionSignature, setFunctionSignature] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [parsedABI, setParsedABI] = useState<ABIFunction | null>(null);
@@ -82,7 +84,6 @@ export default function AbiEncode() {
     setError("");
     setEncodedData("");
     setFunctionSelector("");
-    setFunctionSignature("");
 
     try {
       // Parse ABI signature
@@ -97,7 +98,6 @@ export default function AbiEncode() {
       // Build function signature from ABI
       const paramTypes = functionDef.inputs.map((input) => input.type);
       const signature = `${functionName}(${paramTypes.join(",")})`;
-      setFunctionSignature(signature);
 
       // Create function fragment
       const functionFragment = ethers.FunctionFragment.from(signature);
@@ -106,26 +106,63 @@ export default function AbiEncode() {
       const selector = ethers.id(signature).slice(0, 10);
       setFunctionSelector(selector);
 
-      // Validate parameter count
-      if (parameters.length !== functionDef.inputs.length) {
-        throw new Error(`Expected ${functionDef.inputs.length} parameters, but got ${parameters.length}`);
-      }
-
-      // Parse and validate parameter values
+      // Parse parameter values based on input method
       const values: any[] = [];
-      for (let i = 0; i < functionDef.inputs.length; i++) {
-        const input = functionDef.inputs[i];
-        const param = parameters[i];
 
-        if (!param || !param.value.trim()) {
-          throw new Error(`Parameter "${input.name}" (${input.type}) cannot be empty`);
+      if (useJsonInput) {
+        // Parse JSON parameters
+        if (jsonParameters.trim()) {
+          try {
+            const jsonValues = JSON.parse(jsonParameters);
+            if (!Array.isArray(jsonValues)) {
+              throw new Error("JSON parameters must be an array");
+            }
+
+            if (jsonValues.length !== functionDef.inputs.length) {
+              throw new Error(`Expected ${functionDef.inputs.length} parameters, but got ${jsonValues.length}`);
+            }
+
+            // Validate and parse each value according to its type
+            for (let i = 0; i < functionDef.inputs.length; i++) {
+              const input = functionDef.inputs[i];
+              const value = jsonValues[i];
+
+              try {
+                const parsedValue = parseParameterValue(input.type, String(value));
+                values.push(parsedValue);
+              } catch (err) {
+                throw new Error(`Invalid value for parameter "${input.name}" (${input.type}): ${err}`);
+              }
+            }
+          } catch (err) {
+            if (err instanceof SyntaxError) {
+              throw new Error("Invalid JSON format for parameters");
+            }
+            throw err;
+          }
+        } else {
+          throw new Error("Please enter JSON parameters");
+        }
+      } else {
+        // Use individual parameter fields
+        if (parameters.length !== functionDef.inputs.length) {
+          throw new Error(`Expected ${functionDef.inputs.length} parameters, but got ${parameters.length}`);
         }
 
-        try {
-          const parsedValue = parseParameterValue(input.type, param.value);
-          values.push(parsedValue);
-        } catch (err) {
-          throw new Error(`Invalid value for parameter "${input.name}" (${input.type}): ${err}`);
+        for (let i = 0; i < functionDef.inputs.length; i++) {
+          const input = functionDef.inputs[i];
+          const param = parameters[i];
+
+          if (!param || !param.value.trim()) {
+            throw new Error(`Parameter "${input.name}" (${input.type}) cannot be empty`);
+          }
+
+          try {
+            const parsedValue = parseParameterValue(input.type, param.value);
+            values.push(parsedValue);
+          } catch (err) {
+            throw new Error(`Invalid value for parameter "${input.name}" (${input.type}): ${err}`);
+          }
         }
       }
 
@@ -189,88 +226,152 @@ export default function AbiEncode() {
     setFunctionName("");
     setAbiSignature("");
     setParameters([]);
+    setJsonParameters("");
     setEncodedData("");
     setFunctionSelector("");
-    setFunctionSignature("");
     setParsedABI(null);
     setError("");
   };
 
-  const copyToClipboard = async (text: string) => {
-    try {
-      await navigator.clipboard.writeText(text);
-    } catch (err) {
-      console.error("Failed to copy to clipboard:", err);
-    }
-  };
-
   return (
-    <div className='max-w-4xl mx-auto p-6 space-y-6'>
-      <div className='bg-white rounded-lg shadow-sm border border-gray-200 p-6'>
-        <h2 className='text-2xl font-bold text-gray-900 mb-6'>ABI Encoder</h2>
+    <div className='space-y-6'>
+      <h2 className='text-2xl font-bold text-gray-900 mb-6'>ABI Encoder</h2>
 
-        <div className='space-y-2'>
-          {/* ABI Signature */}
-          <div>
-            <label htmlFor='abiSignature' className='block text-sm font-medium text-gray-700 mb-2'>
-              ABI Function Signature (JSON)
-            </label>
-            <textarea
-              id='abiSignature'
-              value={abiSignature}
-              onChange={(e) => {
-                setAbiSignature(e.target.value);
-                // Auto-parse ABI to generate parameter fields
-                try {
-                  const functionDef = parseABISignature(e.target.value);
-                  setParsedABI(functionDef);
-                  const newParams = functionDef.inputs.map((input) => ({
-                    name: input.name,
-                    value: "",
-                  }));
-                  setParameters(newParams);
-                  setError("");
-                } catch (err) {
-                  // Don't show error while typing, only on encode
-                  setParsedABI(null);
+      <div className='space-y-2'>
+        {/* ABI Signature */}
+        <div>
+          <label htmlFor='abiSignature' className='block text-sm font-medium text-gray-700 mb-2'>
+            ABI Function Signature (JSON)
+          </label>
+          <textarea
+            id='abiSignature'
+            value={abiSignature}
+            onChange={(e) => {
+              setAbiSignature(e.target.value);
+              // Auto-parse ABI to generate parameter fields
+              try {
+                const functionDef = parseABISignature(e.target.value);
+                setParsedABI(functionDef);
+                const newParams = functionDef.inputs.map((input) => ({
+                  name: input.name,
+                  value: "",
+                }));
+                setParameters(newParams);
+                setError("");
+
+                // Generate function selector if function name is already entered
+                if (functionName.trim()) {
+                  try {
+                    const paramTypes = functionDef.inputs.map((input) => input.type);
+                    const signature = `${functionName.trim()}(${paramTypes.join(",")})`;
+                    const selector = ethers.id(signature).slice(0, 10);
+                    setFunctionSelector(selector);
+                  } catch (err) {
+                    setFunctionSelector("");
+                  }
                 }
-              }}
-              placeholder='[{"inputs":[{"name":"recipient","type":"address"},{"name":"amount","type":"uint256"}],"name":"transfer","outputs":[{"name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"}]'
-              rows={4}
-              className='w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-mono text-sm'
-            />
-          </div>
+              } catch (err) {
+                // Don't show error while typing, only on encode
+                setParsedABI(null);
+                setFunctionSelector("");
+              }
+            }}
+            placeholder='[{"inputs":[{"name":"recipient","type":"address"},{"name":"amount","type":"uint256"}],"name":"transfer","outputs":[{"name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"}]'
+            rows={4}
+            className='w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-mono text-sm'
+          />
+        </div>
 
-          {/* Function Name */}
-          <div>
+        {/* Function Name */}
+        <div className='flex flex-col md:flex-row flex-gap-4 justify-between items-center space-y-2 md:space-y-0 md:space-x-4'>
+          <div className='w-full md:w-1/2'>
             <label htmlFor='functionName' className='block text-sm font-medium text-gray-700 mb-2'>
               Function Name
             </label>
-            <input
-              type='text'
-              id='functionName'
-              value={functionName}
-              onChange={(e) => setFunctionName(e.target.value)}
-              placeholder='e.g., transfer, approve, balanceOf'
-              className='w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500'
-            />
+            <div>
+              <input
+                type='text'
+                id='functionName'
+                value={functionName}
+                onChange={(e) => {
+                  setFunctionName(e.target.value);
+                  // Generate function selector immediately when function name changes
+                  if (e.target.value.trim() && parsedABI) {
+                    try {
+                      const paramTypes = parsedABI.inputs.map((input) => input.type);
+                      const signature = `${e.target.value.trim()}(${paramTypes.join(",")})`;
+                      const selector = ethers.id(signature).slice(0, 10);
+                      setFunctionSelector(selector);
+                    } catch (err) {
+                      setFunctionSelector("");
+                    }
+                  } else {
+                    setFunctionSelector("");
+                  }
+                }}
+                placeholder='e.g., transfer, approve, balanceOf'
+                className='w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500'
+              />
+            </div>
           </div>
 
-          {/* Parameters - Auto-generated from ABI */}
-          {parsedABI && parsedABI.inputs.length > 0 && (
-            <div>
-              <label className='block text-sm font-medium text-gray-700 mb-3'>
-                Parameters ({parsedABI.inputs.length} required)
-              </label>
+          {/* Function Selector - Show immediately when function name is valid */}
+          <div className='w-full md:w-1/2'>
+            <label className='block text-sm font-medium text-gray-700 mb-2'>Function Selector</label>
+            <div className='flex items-center space-x-2'>
+              <div className='flex-1 px-3 py-2 bg-purple-50 border border-purple-200 rounded-md font-mono text-sm text-purple-700 flex items-center justify-between'>
+                <span>
+                  {functionSelector ? functionSelector : <p className='text-red-500'>Given function is not in ABI</p>}
+                </span>
+                {functionSelector && <CopyComponent textToCopy={functionSelector} />}
+              </div>
+            </div>
+          </div>
+        </div>
 
+        {/* Parameters - Auto-generated from ABI */}
+        {parsedABI && parsedABI.inputs.length > 0 && (
+          <div>
+            <div className='flex gap-2 mt-4 mb-2'>
+              <button
+                onClick={() => setUseJsonInput(false)}
+                className={`px-3 py-1 text-sm rounded-md transition-colors ${
+                  !useJsonInput ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                }`}
+              >
+                Individual Fields
+              </button>
+              <button
+                onClick={() => setUseJsonInput(true)}
+                className={`px-3 py-1 text-sm rounded-md transition-colors ${
+                  useJsonInput ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                }`}
+              >
+                JSON Input
+              </button>
+            </div>
+
+            {useJsonInput ? (
+              // JSON Parameter Input
+              <div>
+                <label htmlFor='jsonParameters' className='block text-xs font-medium text-gray-600 mb-2'>
+                  Parameters as JSON Array
+                </label>
+                <textarea
+                  id='jsonParameters'
+                  value={jsonParameters}
+                  onChange={(e) => setJsonParameters(e.target.value)}
+                  placeholder={getJsonPlaceholder(parsedABI.inputs)}
+                  rows={2}
+                  className='w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-mono text-sm'
+                />
+              </div>
+            ) : (
+              // Individual Parameter Fields
               <div className='space-y-3'>
                 {parsedABI.inputs.map((input, index) => (
-                  <div
-                    key={index}
-                    className='grid grid-cols-1 md:grid-cols-3 gap-3 p-3 border border-gray-200 rounded-md bg-gray-50'
-                  >
+                  <div key={index} className='grid grid-cols-1 md:grid-cols-3 gap-3 rounded-md'>
                     <div>
-                      <label className='block text-xs font-medium text-gray-600 mb-1'>Parameter Name</label>
                       <input
                         type='text'
                         value={input.name || `param${index}`}
@@ -280,7 +381,6 @@ export default function AbiEncode() {
                     </div>
 
                     <div>
-                      <label className='block text-xs font-medium text-gray-600 mb-1'>Type</label>
                       <input
                         type='text'
                         value={input.type}
@@ -290,7 +390,6 @@ export default function AbiEncode() {
                     </div>
 
                     <div>
-                      <label className='block text-xs font-medium text-gray-600 mb-1'>Value</label>
                       <input
                         type='text'
                         value={parameters[index]?.value || ""}
@@ -302,95 +401,62 @@ export default function AbiEncode() {
                   </div>
                 ))}
               </div>
-            </div>
-          )}
-
-          {/* Action Buttons */}
-          <div className='flex gap-3'>
-            <button
-              onClick={handleEncode}
-              disabled={isLoading || !functionName.trim() || !abiSignature.trim()}
-              className='px-6 py-2 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors'
-            >
-              {isLoading ? "Encoding..." : "Encode Function Data"}
-            </button>
-            <button
-              onClick={clearAll}
-              className='px-6 py-2 bg-gray-200 text-gray-700 font-medium rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors'
-            >
-              Clear All
-            </button>
+            )}
           </div>
+        )}
 
-          {/* Error Display */}
-          {error && (
-            <div className='p-4 bg-red-50 border border-red-200 rounded-md'>
-              <p className='text-red-600 text-sm font-medium'>Error: {error}</p>
-            </div>
-          )}
-
-          {/* Results */}
-          {functionSignature && (
-            <div className='space-y-4'>
-              {/* Function Signature */}
-              <div className='p-4 bg-blue-50 border border-blue-200 rounded-md'>
-                <div className='flex justify-between items-center mb-2'>
-                  <h3 className='text-sm font-medium text-blue-800'>Function Signature</h3>
-                  <button
-                    onClick={() => copyToClipboard(functionSignature)}
-                    className='text-xs text-blue-600 hover:text-blue-800 underline'
-                  >
-                    Copy
-                  </button>
-                </div>
-                <div className='font-mono text-sm text-blue-700 break-all'>{functionSignature}</div>
-              </div>
-
-              {/* Function Selector */}
-              <div className='p-4 bg-purple-50 border border-purple-200 rounded-md'>
-                <div className='flex justify-between items-center mb-2'>
-                  <h3 className='text-sm font-medium text-purple-800'>Function Selector (4 bytes)</h3>
-                  <button
-                    onClick={() => copyToClipboard(functionSelector)}
-                    className='text-xs text-purple-600 hover:text-purple-800 underline'
-                  >
-                    Copy
-                  </button>
-                </div>
-                <div className='font-mono text-sm text-purple-700 break-all'>{functionSelector}</div>
-              </div>
-
-              {/* Encoded Data */}
-              {encodedData && (
-                <div className='p-4 bg-green-50 border border-green-200 rounded-md'>
-                  <div className='flex justify-between items-center mb-2'>
-                    <h3 className='text-sm font-medium text-green-800'>Encoded Function Data</h3>
-                    <button
-                      onClick={() => copyToClipboard(encodedData)}
-                      className='text-xs text-green-600 hover:text-green-800 underline'
-                    >
-                      Copy
-                    </button>
-                  </div>
-                  <div className='font-mono text-sm text-green-700 break-all'>{encodedData}</div>
-                </div>
-              )}
-            </div>
-          )}
+        {/* Action Buttons */}
+        <div className='flex gap-3'>
+          <button
+            onClick={handleEncode}
+            disabled={isLoading || !functionName.trim() || !abiSignature.trim()}
+            className='px-6 py-2 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors'
+          >
+            {isLoading ? "Encoding..." : "Encode Function Data"}
+          </button>
+          <button
+            onClick={clearAll}
+            className='px-6 py-2 bg-gray-200 text-gray-700 font-medium rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors'
+          >
+            Clear All
+          </button>
         </div>
 
-        {/* Usage Instructions */}
-        <div className='mt-6 p-4 bg-blue-50 border border-blue-200 rounded-md'>
-          <h3 className='text-sm font-medium text-blue-800 mb-2'>Usage Instructions</h3>
-          <ul className='text-sm text-blue-700 space-y-1'>
-            <li>• Enter the function name and paste the complete ABI function definition</li>
-            <li>• The ABI should be in JSON format with inputs, name, type, etc.</li>
-            <li>• Parameters will be auto-generated from the ABI inputs</li>
-            <li>• For arrays, use JSON format: [&quot;value1&quot;, &quot;value2&quot;] or [123, 456]</li>
-            <li>• Addresses must be valid Ethereum addresses (42 characters starting with 0x)</li>
-            <li>• The encoded data can be used directly in Ethereum transactions</li>
-          </ul>
-        </div>
+        {/* Error Display */}
+        {error && (
+          <div className='p-4 bg-red-50 border border-red-200 rounded-md'>
+            <p className='text-red-600 text-sm font-medium'>Error: {error}</p>
+          </div>
+        )}
+
+        {/* Encoded Data */}
+        {encodedData && (
+          <div className='p-2 bg-green-50 border border-green-200 rounded-md'>
+            <div className='flex justify-between items-center mb-2'>
+              <h3 className='text-sm font-medium text-green-800'>Encoded Function Data</h3>
+              <CopyComponent textToCopy={encodedData} />
+            </div>
+            <div className='font-mono text-sm text-green-700 break-all'>{encodedData}</div>
+          </div>
+        )}
+      </div>
+
+      {/* Usage Instructions */}
+      <div className='mt-6 p-4 bg-blue-50 border border-blue-200 rounded-md'>
+        <h3 className='text-sm font-medium text-blue-800 mb-2'>Usage Instructions</h3>
+        <ul className='text-sm text-blue-700 space-y-1'>
+          <li>• Enter the function name and paste the complete ABI function definition</li>
+          <li>• The ABI should be in JSON format with inputs, name, type, etc.</li>
+          <li>• Parameters will be auto-generated from the ABI inputs</li>
+          <li>
+            • Choose between <strong>Individual Fields</strong> or <strong>JSON Input</strong> for entering parameter
+            values
+          </li>
+          <li>• For JSON input: Enter values as an array in the same order as function parameters</li>
+          <li>• For arrays, use JSON format: [&quot;value1&quot;, &quot;value2&quot;] or [123, 456]</li>
+          <li>• Addresses must be valid Ethereum addresses (42 characters starting with 0x)</li>
+          <li>• The encoded data can be used directly in Ethereum transactions</li>
+        </ul>
       </div>
     </div>
   );
@@ -430,4 +496,44 @@ function getPlaceholder(type: string): string {
       }
       return "value";
   }
+}
+
+function getJsonPlaceholder(inputs: ABIInput[]): string {
+  const examples = inputs.map((input) => {
+    if (input.type.includes("[]")) {
+      const baseType = input.type.replace("[]", "");
+      if (baseType === "uint256" || baseType.startsWith("uint") || baseType.startsWith("int")) {
+        return "[123, 456]";
+      } else if (baseType === "address") {
+        return '["0x742d35Cc6634C0532925a3b8D6E4CE", "0x456..."]';
+      } else if (baseType === "string") {
+        return '["hello", "world"]';
+      } else {
+        return '["value1", "value2"]';
+      }
+    }
+
+    switch (input.type) {
+      case "address":
+        return '"0x742d35Cc6634C0532925a3b8D6E4CE"';
+      case "bool":
+        return "true";
+      case "string":
+        return '"Hello World"';
+      case "bytes":
+      case "bytes32":
+      case "bytes20":
+      case "bytes16":
+      case "bytes8":
+      case "bytes4":
+        return '"0x1234567890abcdef"';
+      default:
+        if (input.type.startsWith("uint") || input.type.startsWith("int")) {
+          return '"1000000000000000000"';
+        }
+        return '"value"';
+    }
+  });
+
+  return `[${examples.join(", ")}]`;
 }
