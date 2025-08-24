@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import BaseConverter from "../tools/base-convert";
 import AbiDecoder from "../tools/abi-decode";
 import AbiEncode from "../tools/abi-encode";
+import EventDecode from "../tools/event-decode";
 import AddressFormatter from "../tools/address-format";
 import AddressGenerator from "../tools/address-generate";
 import HashGenerator from "../tools/hash";
@@ -23,6 +24,7 @@ const topics = [
           { id: "eth_tx", name: "Number Base Converter", component: <BaseConverter /> },
           { id: "eth_abi_decode", name: "ABI Decoder", component: <AbiDecoder /> },
           { id: "eth_abi_encode", name: "ABI Encoder", component: <AbiEncode /> },
+          { id: "eth_event_decode", name: "Event Decoder", component: <EventDecode /> },
           { id: "eth_address_generator", name: "Address Generator", component: <AddressGenerator /> },
           { id: "eth_address_format", name: "Address Formatter", component: <AddressFormatter /> },
           { id: "eth_hash", name: "Hash", component: <HashGenerator /> },
@@ -171,6 +173,7 @@ export const Picker = () => {
           {selectedOption === "eth_tx" && currentOption?.component}
           {selectedOption === "eth_abi_decode" && currentOption?.component}
           {selectedOption === "eth_abi_encode" && currentOption?.component}
+          {selectedOption === "eth_event_decode" && currentOption?.component}
           {selectedOption === "eth_address_generator" && currentOption?.component}
           {selectedOption === "eth_address_format" && currentOption?.component}
           {selectedOption === "eth_hash" && currentOption?.component}
