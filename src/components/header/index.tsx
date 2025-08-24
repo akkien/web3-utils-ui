@@ -9,7 +9,7 @@ import CopyComponent from "../copy";
 
 const Header = () => {
   const evmAddress = "0xDcb799a31E4CA56CBc224b92DA8721f973460e52";
-  const solAddress = "5uMES4qFXAfnNKnpyEZPzRCjMkoLkGhDDa6rAf1ckRi5";
+  const solAddress = "8LNaFv6r2PMP1m2hrbqwtNQH7EMdfQmt51Utznm4gmSR";
   const [isScrolled, setIsScrolled] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   useEffect(() => {
