@@ -174,7 +174,9 @@ export const AbiDecoder = () => {
         <div className='p-4 bg-gray-50 border border-gray-200 rounded-md'>
           <div className='mb-4'>
             <h3 className='text-lg font-semibold'>Decoded Function</h3>
-            <p className='font-mono text-sm'>{decodedFunction.signature}</p>
+            <p className='font-mono text-sm'>
+              {decodedFunction.name} ({decodedFunction.signature})
+            </p>
           </div>
 
           <div>
